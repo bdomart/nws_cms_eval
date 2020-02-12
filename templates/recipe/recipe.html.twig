@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello RecipeController!{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>
+            {{ recipe.name }}
+            <small class="text-muted"> - {{ recipe.numberPeople }} personne{% if recipe.numberPeople > 1 %}s{% endif %}</small>
+        </h1>
+
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 class="display-4">Instructions</h1>
+                <p class="lead">{{ recipe.instruction }}</p>
+            </div>
+        </div>
+
+        <div class="btn-group" role="group" aria-label="Actions">
+            <a href="{{ path('recipe_edit', {id: recipe.id}) }}" class="btn btn-secondary">Modifier</a>
+            <a href="{{ path('recipe_delete', {id: recipe.id}) }}" class="btn btn-danger">Supprimer</a>
+        </div>
+    </div>
+{% endblock %}
