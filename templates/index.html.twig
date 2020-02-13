@@ -13,7 +13,10 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ recipe.name }}</h5>
                     <h6 class="card-subtitle mb-2 text-muted">{{ recipe.numberPeople }} personnes</h6>
-                    <p class="card-text">Instructions :<br/>{{ recipe.instruction }}</p>
+                    <p class="card-text">
+                        Instructions :<br/>
+                        {{ recipe.instruction | slice(0,149) }}{% if recipe.instruction|length > 150 %}...{% endif %}
+                    </p>
                     <a href="{{ path('recipe_show', {id: recipe.id}) }}" class="card-link">Voir la recette</a>
                 </div>
             </div>
