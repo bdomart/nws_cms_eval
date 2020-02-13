@@ -6,6 +6,7 @@ use App\Entity\Recipe;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -41,21 +42,22 @@ class RecipeController extends AbstractController
     }
 
     /**
-     * @param Recipe $recipe
+     * @Route("/recipe/create", name="recipe_create")
      * @param Request $request
      * @return RedirectResponse|Response
+     * @throws Exception
      */
-    private function save(Recipe $recipe, Request $request)
+    public function create(Request $request)
     {
-        $form = $this->createForm(RecipeType::class, $recipe);
+        $form = $this->createForm(RecipeType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            // $form->getData() holds the submitted values
-            // but, the original `$task` variable has also been updated
             $recipe = $form->getData();
 
-            // ... perform some action, such as saving the task to the database
-            // for example, if Task is a Doctrine entity, save it!
+            $datetime = new DateTime();
+            $recipe->setDateCreated($datetime);
+            $recipe->setDateUpdated($datetime);
+
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($recipe);
             $entityManager->flush();
@@ -69,21 +71,6 @@ class RecipeController extends AbstractController
     }
 
     /**
-     * @Route("/recipe/create", name="recipe_create")
-     * @param Request $request
-     * @return RedirectResponse|Response
-     * @throws Exception
-     */
-    public function create(Request $request)
-    {
-        $recipe = new Recipe();
-        $datetime = new DateTime();
-        $recipe->setDateCreated($datetime);
-        $recipe->setDateUpdated($datetime);
-        return $this->save($recipe, $request);
-    }
-
-    /**
      * @Route("/recipe/{id}/edit", name="recipe_edit")
      * @param Recipe $recipe
      * @param Request $request
@@ -92,8 +79,41 @@ class RecipeController extends AbstractController
      */
     public function edit(Recipe $recipe, Request $request)
     {
-        $recipe->setDateUpdated(new DateTime());
-        return $this->save($recipe, $request);
+        // Create an ArrayCollection of the current Ingredient objects in the database
+        $originalIngredients = new ArrayCollection();
+        foreach ($recipe->getIngredients() as $ingredient) {
+            $originalIngredients->add($ingredient);
+        }
+
+        $form = $this->createForm(RecipeType::class, $recipe);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Recipe $recipe */
+            $recipe = $form->getData();
+
+            $datetime = new DateTime();
+            $recipe->setDateUpdated($datetime);
+
+            $entityManager = $this->getDoctrine()->getManager();
+            foreach ($originalIngredients as $ingredient) {
+                if (!$recipe->getIngredients()->contains($ingredient)) {
+                    $ingredient->getRecipe()->removeIngredient($ingredient);
+                    $entityManager->remove($ingredient);
+                }
+            }
+            foreach($recipe->getIngredients() as $ingredient) {
+                $ingredient->setRecipe($recipe);
+            }
+
+            $entityManager->persist($recipe);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('recipe_show', ['id' => $recipe->getId()]);
+        }
+
+        return $this->render('recipe/form.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 
     /**
@@ -104,6 +124,10 @@ class RecipeController extends AbstractController
     public function delete(Recipe $recipe)
     {
         $entityManager = $this->getDoctrine()->getManager();
+        foreach ($recipe->getIngredients() as $ingredient) {
+            $ingredient->getRecipe()->removeIngredient($ingredient);
+            $entityManager->remove($ingredient);
+        }
         $entityManager->remove($recipe);
         $entityManager->flush();
 

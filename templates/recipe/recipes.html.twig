@@ -3,11 +3,17 @@
 {% block title %}Hello RecipeController!{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <h1>Liste des recettes</h1>
-
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col">
+                <h1 class="m-0">Liste des recettes</h1>
+            </div>
+            <div class="col text-right align-self-end">
+                <a href="{{ path('recipe_create') }}" class="btn btn-primary">Créer une recette</a>
+            </div>
+        </div>
         {% if recipes is not empty %}
-        <table class="table table-hover">
+        <table class="table table-hover mt-3">
             <thead>
             <tr>
                 <th scope="col">#</th>

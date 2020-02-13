@@ -3,9 +3,42 @@
 {% block title %}Hello RecipeController!{% endblock %}
 
 {% block body %}
-<div class="container">
-    <h1>Création d'une recette</h1>
+    <div class="container mt-5">
+        <h1>Création d'une recette</h1>
 
-    {{ form(form) }}
-</div>
+        {{ form_start(form) }}
+
+        {{ form_row(form.name) }}
+        {{ form_row(form.instruction) }}
+        {{ form_row(form.number_people) }}
+
+        {{ form_label(form.ingredients) }}
+        <ul class="list-group ingredients" data-prototype="{{ form_widget(form.ingredients.vars.prototype)|e('html_attr') }}">
+            {% if form.ingredients is not empty %}
+                {% for ingredient in form.ingredients %}
+                    <li class="list-group-item">
+                        {{ form_widget(ingredient) }}
+                        <a href="#" class="remove-ingredient text-danger">Retirer l'ingrédient</a>
+                    </li>
+                {% endfor %}
+            {% else %}
+                {{ form_widget(form.ingredients) }}
+            {% endif %}
+        </ul>
+
+        <div class="mt-3">
+            {{ form_row(form.save) }}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <script>
+
+    </script>
 {% endblock %}
+
+ {% block javascripts %}
+     {{ parent() }}
+     {{ encore_entry_script_tags('recipe_form') }}
+ {% endblock %}
