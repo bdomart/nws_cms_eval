@@ -1,0 +1,20 @@
+{% set route = app.request.attributes.get('_route') %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">Recipe-book</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#recipe-bookNav" aria-controls="recipe-bookNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item {% if route == 'index' %}active{% endif %}">
+                <a class="nav-link" href="{{ path('index') }}">Accueil {% if app.request.attributes.get('_route') == 'index' %}<span class="sr-only">(current)</span>{% endif %}</a>
+            </li>
+            <li class="nav-item {% if route == 'recipe_list' %}active{% endif %}">
+                <a class="nav-link" href="{{ path('recipe_list') }}">Recettes {% if route == 'recipe_list' %}<span class="sr-only">(current)</span>{% endif %}</a>
+            </li>
+            <li class="nav-item {% if route == 'food_list' %}active{% endif %}">
+                <a class="nav-link" href="{{ path('food_list') }}">Aliments {% if route == 'food_list' %}<span class="sr-only">(current)</span>{% endif %}</a>
+            </li>
+        </ul>
+    </div>
+</nav>
