@@ -3,13 +3,27 @@
 {% block title %}Hello RecipeController!{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <h1>
-            {{ recipe.name }}
-            <small class="text-muted"> - {{ recipe.numberPeople }} personne{% if recipe.numberPeople > 1 %}s{% endif %}</small>
-        </h1>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col">
+            <h1>
+                {{ recipe.name }}
+                <small class="text-muted"> - {{ recipe.numberPeople }} personne{% if recipe.numberPeople > 1 %}s{% endif %}</small>
+            </h1>
+            </div>
+            <div class="col">
+                <h2>Ingrédients</h2>
+                <ul class="list-group">
+                    {% for ingredient in recipe.ingredients %}
+                    <li class="list-group-item">
+                        {{ ingredient.food.name }}  <span class="float-right">{{ ingredient.quantity }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
 
-        <div class="jumbotron jumbotron-fluid">
+        <div class="jumbotron jumbotron-fluid mt-3">
             <div class="container">
                 <h1 class="display-4">Instructions</h1>
                 <p class="lead">{{ recipe.instruction }}</p>

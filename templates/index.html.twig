@@ -9,7 +9,7 @@
         <div class="col-8">
             <h2>Dernières recettes...</h2>
             {% for recipe in recipes %}
-            <div class="card">
+            <div class="card {% if not loop.first %}mt-2{% endif %} {% if not loop.last %}mb-2{% endif %}">
                 <div class="card-body">
                     <h5 class="card-title">{{ recipe.name }}</h5>
                     <h6 class="card-subtitle mb-2 text-muted">{{ recipe.numberPeople }} personnes</h6>
